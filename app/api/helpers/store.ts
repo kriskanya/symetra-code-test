@@ -1,33 +1,19 @@
 import { DiscountCode, Purchase } from '@/app/api/helpers/helpers'
+import _ from 'lodash'
 
-
-class DiscountStore {
-  private static _instance: any
-
-  private constructor() { }
-
-  static getInstance() {
-    if (this._instance && this._instance.length > 0) {
-      return this._instance;
-    }
-
-    this._instance = []
-    return this._instance;
+export const getStoreValue = <T>(storeName: 'discountStore' | 'purchaseStore'): T[] => {
+  const currentStoreValue = _.get(global, storeName)
+  if (!currentStoreValue) {
+    _.set(global, storeName, [])
   }
-
-  static setInstance(input: any) {
-    if (!this._instance) {
-      this._instance = []
-    }
-
-    this._instance.push(input)
-    return this._instance;
-  }
-
+  return _.get(global, storeName, [])
 }
 
-export default DiscountStore
+export const setStoreValue = <T>(input: T, storeName: 'discountStore' | 'purchaseStore'): T[] => {
+  const currentStoreValue: DiscountCode[] = getStoreValue(storeName)
+  const newStoreValue = [...currentStoreValue, input]
 
-;
-export let discountStore: any[] = []
-export let purchaseStore: any[] = []
+  _.set(global, storeName, newStoreValue)
+
+  return _.get(global, storeName, [])
+}

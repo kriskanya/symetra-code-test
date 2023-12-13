@@ -1,13 +1,13 @@
 import _ from 'lodash'
-
-let discountStore: DiscountCode[] = []
-let purchaseStore: Purchase[] = []
+import { getStoreValue, setStoreValue } from '@/app/api/helpers/store'
 
 export const createDiscountRecord = (payload: DiscountCode): Promise<DiscountCode[] | string> => {
   return new Promise(function(resolve, reject) {
     if (!payload || _.isEmpty(payload)) {
       return reject({ message: 'Create discount record error: payload is empty' })
     }
+
+    let discountStore: DiscountCode[] = getStoreValue<DiscountCode>('discountStore')
 
     const existingRecord = discountStore.find(d => {
       return d.discountCode === payload?.discountCode
@@ -17,9 +17,7 @@ export const createDiscountRecord = (payload: DiscountCode): Promise<DiscountCod
       return reject({message: 'Create discount record error: discount code already exists'})
     }
 
-    // discountStore = [ ...discountStore, payload ]
-
-    discountStore.push(payload)
+    discountStore = setStoreValue<DiscountCode>(payload, 'discountStore')
     resolve(discountStore)
   })
 }
@@ -29,6 +27,8 @@ export const getDiscountRecordByName = (discountCode: string) => {
     if (!discountCode || (_.isString(discountCode) && discountCode.length === 0)) {
       reject({ message: 'Fetch discount record error: no discount code provided' })
     }
+
+    const discountStore = getStoreValue<DiscountCode>('discountStore')
 
     const record = discountStore.find(d => {
       return d.discountCode === discountCode
@@ -44,6 +44,7 @@ export const createPurchaseRecord = (payload: Purchase): Promise<Purchase[]> => 
       return reject({ message: 'Create discount record error: payload is empty' })
     }
 
+    const discountStore = getStoreValue<DiscountCode>('discountStore')
 
     const discount = discountStore.find(d => {
       return d.discountCode === payload?.discountCode
@@ -54,7 +55,7 @@ export const createPurchaseRecord = (payload: Purchase): Promise<Purchase[]> => 
       payload = { ...payload, ...{ discountedPrice } }
     }
 
-    purchaseStore.push(payload)
+    const purchaseStore = setStoreValue<Purchase>(payload, 'purchaseStore')
     resolve(purchaseStore)
   })
 }

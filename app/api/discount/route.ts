@@ -4,7 +4,6 @@ import {
   validateFetchDiscountCodePayload
 } from '@/app/api/discount/discount.validation'
 import { createDiscountRecord, getDiscountRecordByName } from '@/app/api/helpers/helpers'
-import DiscountStore from '@/app/api/helpers/store'
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,11 +11,8 @@ export async function POST(req: NextRequest) {
     // validate the payload for the incoming request
     validateCreateDiscountCodePayload({ nthTransaction, discountCode, discountedAmount })
 
-    // DiscountStore.setInstance('hello')
-    // console.log('route2', DiscountStore.getInstance())
-
-
     const res = await createDiscountRecord({ nthTransaction, discountCode, discountedAmount })
+
     return Response.json(res)
 
   } catch (err: any) {
