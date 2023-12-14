@@ -31,13 +31,14 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const discountCode = req.nextUrl.searchParams.get('discountCode')
+    const customerId= req.nextUrl.searchParams.get('customerId')
     // validate the payload for the incoming request
-    validateFetchDiscountCodePayload({ discountCode })
+    const validatedPayload = validateFetchDiscountCodePayload({ discountCode, customerId })
 
-    let res = await getDiscountRecordByName(discountCode as string)
+    let res = await getDiscountRecordByName(validatedPayload.discountCode as string, validatedPayload.customerId as unknown as number)
 
     if (_.isUndefined(res)) {
-      res = { errorMessage: 'Discount code does not exist' }
+      res = { errorMessage: 'Discount code is invalid' }
     }
 
     return Response.json(res)

@@ -61,7 +61,7 @@ export default function Customer() {
       return setMessage('Please enter discount code', setFlashMessage)
     }
 
-    const res = await fetch(`/api/discount?discountCode=${ formValues?.discountCode }`)
+    const res = await fetch(`/api/discount?discountCode=${ formValues?.discountCode }&customerId=${ formValues?.customerId }`)
     const jsonResponse = await res.json()
 
     if (jsonResponse?.errorMessage) {

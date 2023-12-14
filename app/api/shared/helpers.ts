@@ -1,4 +1,4 @@
-import _, { get } from 'lodash'
+import _ from 'lodash'
 import { getStoreValue, setDiscountStoreValue, setPurchaseStoreValue } from '@/app/api/shared/store'
 import { DiscountCode, Purchase, PurchaseStoreItem } from '@/app/api/shared/types'
 
@@ -29,20 +29,34 @@ export const createDiscountRecord = (payload: DiscountCode): Promise<DiscountCod
 }
 
 /**
+ * Retrieves the purchase count for a specified customer
+ * @param customerId
+ */
+const getIndividualPurchaseCount = (customerId: number) => {
+  const purchases = getStoreValue<PurchaseStoreItem>('purchaseStore')
+    .find(p => p.customerId === customerId)?.purchases
+
+  return purchases?.length || 0
+}
+
+/**
  * Fetches discount record from discountStore by provided discountCode
  * @param discountCode
+ * @param customerId
  * @return Promise<DiscountCode>
  */
-export const getDiscountRecordByName = (discountCode: string) => {
+export const getDiscountRecordByName = (discountCode: string, customerId: number) => {
   return new Promise(function(resolve, reject) {
     if (!discountCode || (_.isString(discountCode) && discountCode.length === 0)) {
       reject({ message: 'Fetch discount record error: no discount code provided' })
     }
 
+    const purchasesCount = getIndividualPurchaseCount(customerId)
+
     const discountStore = getStoreValue<DiscountCode>('discountStore')
 
     const record = discountStore.find(d => {
-      return d.discountCode === discountCode
+      return d.discountCode === discountCode && d.nthTransaction === purchasesCount + 1
     })
 
     resolve(record)
@@ -78,6 +92,9 @@ export const createPurchaseRecord = (payload: Purchase, customerId: number): Pro
     if (discount && payload?.originalPrice && discount?.discountedAmount && (discount?.nthTransaction === numberOfCustomerPurchases)) {
       const discountedPrice = payload.originalPrice - (payload.originalPrice * discount.discountedAmount)
       payload = { ...payload, ...{ discountedPrice } }
+    // otherwise, ensure there is no discountCode on this record
+    } else {
+      payload = _.omit(payload, 'discountCode')
     }
 
     const purchaseStore = setPurchaseStoreValue(payload, customerId)
@@ -85,17 +102,23 @@ export const createPurchaseRecord = (payload: Purchase, customerId: number): Pro
   })
 }
 
+/**
+ * Retrieves the total purchase count
+ */
 export const getPurchaseCount = () => {
   const purchases = getStoreValue<PurchaseStoreItem>('purchaseStore')
 
   if (purchases.length === 0) return 0
 
   return purchases.reduce((accumulator: number, currentValue) => {
-    accumulator += get(currentValue, 'purchases.length', 0)
+    accumulator += _.get(currentValue, 'purchases.length', 0)
     return accumulator
   }, 0)
 }
 
+/**
+ * Retrieves the count of all discounts given
+ */
 export const getTotalDiscountsGiven = () => {
   const purchases: PurchaseStoreItem[] = getStoreValue<PurchaseStoreItem>('purchaseStore')
   const discounts: DiscountCode[] = getStoreValue<DiscountCode>('discountStore')
