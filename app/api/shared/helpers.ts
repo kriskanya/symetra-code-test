@@ -2,6 +2,11 @@ import _ from 'lodash'
 import { getStoreValue, setDiscountStoreValue, setPurchaseStoreValue } from '@/app/api/shared/store'
 import { DiscountCode, Purchase, PurchaseStoreItem } from '@/app/api/shared/types'
 
+/**
+ * Creates a discount record
+ * @param payload DiscountCode
+ * @return Promise<DiscountCode[] | string
+ */
 export const createDiscountRecord = (payload: DiscountCode): Promise<DiscountCode[] | string> => {
   return new Promise(function(resolve, reject) {
     if (!payload || _.isEmpty(payload)) {
@@ -23,6 +28,11 @@ export const createDiscountRecord = (payload: DiscountCode): Promise<DiscountCod
   })
 }
 
+/**
+ * Fetches discount record from discountStore by provided discountCode
+ * @param discountCode
+ * @return Promise<DiscountCode>
+ */
 export const getDiscountRecordByName = (discountCode: string) => {
   return new Promise(function(resolve, reject) {
     if (!discountCode || (_.isString(discountCode) && discountCode.length === 0)) {
@@ -39,6 +49,12 @@ export const getDiscountRecordByName = (discountCode: string) => {
   })
 }
 
+/**
+ * Creates a purchase record
+ * @param payload
+ * @param customerId
+ * @return Promise<PurchaseStoreItem[]>
+ */
 export const createPurchaseRecord = (payload: Purchase, customerId: number): Promise<PurchaseStoreItem[]> => {
   return new Promise(function(resolve, reject) {
     if (!payload || _.isEmpty(payload)) {
@@ -55,11 +71,11 @@ export const createPurchaseRecord = (payload: Purchase, customerId: number): Pro
       .filter((item: PurchaseStoreItem) => {
         return item?.customerId === customerId
       })
-    // if there are no customer purchases yet, consider this the first purchase and set numberOfCustomerPurchases to 1
-    const numberOfCustomerPurchases = _.get(purchaseStoreItemForCustomerId, '[0].purchases.length', 1)
+    // if there are no customer purchases yet, consider this the first purchase and set numberOfCustomerPurchases to 0
+    const numberOfCustomerPurchases = _.get(purchaseStoreItemForCustomerId, '[0].purchases.length', 0) + 1
 
-    // only apply discount if it's equal to the nthTransaction specified on the discount record
-    if (discount && payload?.originalPrice && discount?.discountedAmount && (discount?.nthTransaction === numberOfCustomerPurchases + 1)) {
+    // only apply discount if the number of the current purchase is equal to the nthTransaction specified on the discount record
+    if (discount && payload?.originalPrice && discount?.discountedAmount && (discount?.nthTransaction === numberOfCustomerPurchases)) {
       const discountedPrice = payload.originalPrice - (payload.originalPrice * discount.discountedAmount)
       payload = { ...payload, ...{ discountedPrice } }
     }
