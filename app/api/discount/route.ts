@@ -3,7 +3,7 @@ import {
   validateCreateDiscountCodePayload,
   validateFetchDiscountCodePayload
 } from '@/app/api/discount/discount.validation'
-import { createDiscountRecord, getDiscountRecordByName } from '@/app/api/helpers/helpers'
+import { createDiscountRecord, getDiscountRecordByName } from '@/app/api/shared/helpers'
 
 export async function POST(req: NextRequest) {
   try {

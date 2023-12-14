@@ -4,7 +4,7 @@ import {
   POSITIVE_NONZERO_INT,
   validate
 } from '@/app/api/common/constants/common-validation.constants'
-import { DiscountCode } from '@/app/api/helpers/helpers'
+import { DiscountCode } from '@/app/api/shared/helpers'
 
 const VALIDATION_OPTS:ValidationOptions = {
   abortEarly    : true,

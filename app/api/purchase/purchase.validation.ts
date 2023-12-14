@@ -5,7 +5,7 @@ import {
   UI_DB_ID,
   validate
 } from '@/app/api/common/constants/common-validation.constants'
-import { Purchase } from '@/app/api/helpers/helpers'
+import { Purchase } from '@/app/api/shared/helpers'
 
 const VALIDATION_OPTS:ValidationOptions = {
   abortEarly    : true,
