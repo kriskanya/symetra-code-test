@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import { DiscountCode, Purchase, PurchaseStoreItem } from '@/app/api/shared/types'
 
-// This is the in-memory backend data store. In a real app, a database would handle the saving and retrieval
-// of data.
+// This is the in-memory backend data store. In a real app, a database would handle the saving
+// and retrieval of data.
 
 /**
  * Retrieves store value for discounts or purchases

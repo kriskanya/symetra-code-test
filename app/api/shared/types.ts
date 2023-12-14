@@ -6,8 +6,8 @@ export interface Purchase {
 }
 
 export interface PurchaseStoreItem {
-  customerId: number,
-  purchases: Purchase[]
+  customerId : number,
+  purchases  : Purchase[]
 }
 
 export interface DiscountCode {
