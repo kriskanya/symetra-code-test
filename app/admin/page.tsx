@@ -2,24 +2,26 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { cloneDeep, get, isArray, set } from 'lodash'
 import { DiscountCode, PurchaseStoreItem } from '@/app/api/shared/types'
+import { AdminForm, fetchDiscounts, fetchPurchases, setMessage } from '@/app/common/helpers'
+import Link from 'next/link'
 
 export default function Admin() {
-  const [formValues, setFormValues] = useState({
+  const [formValues, setFormValues] = useState<AdminForm>({
     nthTransaction: '',
     discountedAmount: '',
     discountCode: ''
   })
   const [discounts, setDiscounts] = useState<DiscountCode[]>([])
   const [purchases, setPurchases] = useState<PurchaseStoreItem[]>([])
-  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [flashMessage, setFlashMessage] = useState<string>('')
 
   const submitForm = async (event: FormEvent) => {
     event.preventDefault()
 
     const body = {
-      nthTransaction: +formValues.nthTransaction,
-      discountedAmount: +formValues.discountedAmount,
-      discountCode: formValues.discountCode
+      nthTransaction   : +formValues.nthTransaction,
+      discountedAmount : +formValues.discountedAmount,
+      discountCode     : formValues.discountCode
     }
 
     const res = await fetch(`/api/discount`, {
@@ -33,35 +35,10 @@ export default function Admin() {
     const jsonResponse = await res.json()
 
     if (jsonResponse?.error) {
-      setError(jsonResponse.error)
+      setMessage(jsonResponse.error, setFlashMessage)
     } else {
       setDiscounts(jsonResponse)
-    }
-  }
-
-  const fetchDiscounts = async () => {
-    try {
-      const res = await fetch('/api/discounts')
-      const discounts = await res.json()
-
-      if (isArray(discounts) && discounts.length) {
-        setDiscounts(discounts)
-      }
-    } catch (err) {
-      setError(err as string)
-    }
-  }
-
-  const fetchPurchases = async () => {
-    try {
-      const res = await fetch('/api/purchases')
-      const purchases = await res.json()
-
-      if (isArray(purchases) && purchases.length) {
-        setPurchases(purchases)
-      }
-    } catch (err) {
-      setError(err as string)
+      setMessage('record successfully created', setFlashMessage)
     }
   }
 
@@ -75,25 +52,46 @@ export default function Admin() {
     setFormValues(formInputs)
   }
 
-  const setError = (text: string) => {
-    setErrorMessage(text)
-    setTimeout(() => {
-      setErrorMessage('')
-    }, 5000)
+  const getPurchasesCount = () => {
+    if (purchases.length === 0) return ''
+
+    return purchases.reduce((accumulator, currentValue) => {
+      accumulator += get(currentValue, 'purchases.length', 0)
+      return accumulator
+    }, 0)
+  }
+
+  const getTotalDiscountsGiven = () => {
+    if (discounts.length === 0) return ''
+
+    return purchases.reduce((accumulator, currentValue) => {
+      const discountsGiven = currentValue?.purchases.filter(p => p.discountedPrice)?.length
+      accumulator += discountsGiven
+      return accumulator
+    }, 0)
   }
 
   useEffect(() => {
     (async () => {
-      await Promise.all([fetchDiscounts(), fetchPurchases()])
+      await Promise.all([
+        fetchDiscounts(setDiscounts, setFlashMessage),
+        fetchPurchases(setPurchases, setFlashMessage)
+      ])
     })()
   }, [])
 
   return (
     <form onSubmit={submitForm}>
       <section>
-        <h1 className="text-2xl mb-4 ml-4 mt-4">Admin Page</h1>
+        <div>
+          <h1 className="text-2xl mb-4 ml-4 mt-4">Admin Page</h1>
+          <div className="text-teal-200 inline-block ml-4">
+            <span>{'<'}</span>
+          </div>
+          <Link className="ml-4 mt-4" href="/customer">go to customer page</Link>
+        </div>
 
-        <div className="flex gap-20 justify-center">
+        <div className="flex gap-20 justify-center mt-4">
           <div>
             <div className="flex justify-between">
               <label htmlFor="nthTransaction">{`'N'th transaction to receive discount`}</label>
@@ -101,7 +99,8 @@ export default function Admin() {
                      id="nthTransaction"
                      type="text"
                      value={formValues.nthTransaction}
-                     onChange={onChange} required
+                     onChange={onChange}
+                     required
               />
             </div>
             <div className="flex justify-between mt-4">
@@ -110,34 +109,52 @@ export default function Admin() {
                      id="discountedAmount"
                      type="text"
                      value={formValues.discountedAmount}
-                     onChange={onChange} required
+                     onChange={onChange}
+                     required
               />
             </div>
             <div className="flex justify-between mt-4">
-              <label className="mt-2" htmlFor="discountCode">Discount Code</label>
+              <label htmlFor="discountCode">Discount Code</label>
               <input className="ml-3 text-black"
                      id="discountCode"
                      type="text"
                      value={formValues.discountCode}
-                     onChange={onChange} required
+                     onChange={onChange}
+                     required
               />
             </div>
-            <button className="mt-20 border px-4 py-2">Create new discount</button>
-            <p className="mt-2">{errorMessage}</p>
+            <button className="mt-20 border px-4 py-2 rounded">Create new discount</button>
+            <p className="mt-2">{flashMessage}</p>
           </div>
-          <div>
+          <div className="flex">
             <div>
-              <h3>Saved Discounts:</h3>
+              {
+                isArray(purchases) && purchases.length
+                  ? (
+                    <div>
+                      <h3>Saved Purchases:</h3>
+                      <pre id="json">{JSON.stringify(purchases, null, 4)}</pre>
+                    </div>
+                  )
+                  : ''
+              }
+            </div>
+            <div>
               {
                 isArray(discounts) && discounts.length
-                  ? <pre id="json">{JSON.stringify(discounts, null, 4)}</pre>
+                  ? (
+                    <div>
+                      <h3>Saved Discounts:</h3>
+                      <pre id="json">{JSON.stringify(discounts, null, 4)}</pre>
+                    </div>
+                  )
                   : ''
               }
             </div>
           </div>
           <div>
-            <p>Count of purchases: {purchases?.length}</p>
-            <p className="mt-6">Total discounts given out:</p>
+            <p>Purchases Count: {getPurchasesCount()}</p>
+            <p className="mt-6">Total discounts given out: {getTotalDiscountsGiven()}</p>
           </div>
         </div>
       </section>

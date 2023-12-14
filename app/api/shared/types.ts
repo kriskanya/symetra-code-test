@@ -1,3 +1,10 @@
+export interface CreatePurchasePayload {
+  discountCode    ?: string,
+  itemName         : string,
+  originalPrice    : number,
+  customerId       : number
+}
+
 export interface Purchase {
   discountCode    ?: string,
   itemName         : string,
