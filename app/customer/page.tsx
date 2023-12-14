@@ -54,6 +54,23 @@ export default function Customer() {
     setFormValues(formInputs)
   }
 
+  const checkDiscountCode = async (event: any) => {
+    event.preventDefault()
+
+    if (!formValues?.discountCode) {
+      return setMessage('Please enter discount code', setFlashMessage)
+    }
+
+    const res = await fetch(`/api/discount?discountCode=${ formValues?.discountCode }`)
+    const jsonResponse = await res.json()
+
+    if (jsonResponse?.errorMessage) {
+      return setMessage(jsonResponse.errorMessage, setFlashMessage)
+    } else {
+      return setMessage('Discount code is valid', setFlashMessage)
+    }
+  }
+
   useEffect(() => {
     (async () => {
       await Promise.all([
@@ -106,14 +123,19 @@ export default function Customer() {
                      required
               />
             </div>
-            <div className="flex justify-between mt-4">
-              <label htmlFor="discountCode">Discount Code</label>
-              <input className="ml-3 text-black"
-                     id="discountCode"
-                     type="text"
-                     value={formValues.discountCode}
-                     onChange={onChange}
-              />
+            <div>
+              <div className="flex justify-between mt-4">
+                <label htmlFor="discountCode">Discount Code</label>
+                <input className="ml-3 text-black"
+                       id="discountCode"
+                       type="text"
+                       value={formValues.discountCode}
+                       onChange={onChange}
+                />
+              </div>
+              <button className="border px-4 py-2 rounded float-right mt-2 text-xs" onClick={checkDiscountCode}>
+                Check discount code
+              </button>
             </div>
             <button className="mt-20 border px-4 py-2 rounded">Create new purchase</button>
             <p className="mt-2">{flashMessage}</p>

@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _, { get } from 'lodash'
 import { getStoreValue, setDiscountStoreValue, setPurchaseStoreValue } from '@/app/api/shared/store'
 import { DiscountCode, Purchase, PurchaseStoreItem } from '@/app/api/shared/types'
 
@@ -83,4 +83,28 @@ export const createPurchaseRecord = (payload: Purchase, customerId: number): Pro
     const purchaseStore = setPurchaseStoreValue(payload, customerId)
     resolve(purchaseStore)
   })
+}
+
+export const getPurchaseCount = () => {
+  const purchases = getStoreValue<PurchaseStoreItem>('purchaseStore')
+
+  if (purchases.length === 0) return 0
+
+  return purchases.reduce((accumulator: number, currentValue) => {
+    accumulator += get(currentValue, 'purchases.length', 0)
+    return accumulator
+  }, 0)
+}
+
+export const getTotalDiscountsGiven = () => {
+  const purchases: PurchaseStoreItem[] = getStoreValue<PurchaseStoreItem>('purchaseStore')
+  const discounts: DiscountCode[] = getStoreValue<DiscountCode>('discountStore')
+
+  if (discounts.length === 0 || purchases.length === 0) return 0
+
+  return purchases.reduce((accumulator, currentValue) => {
+    const discountsGiven = currentValue?.purchases.filter(p => p.discountedPrice)?.length
+    accumulator += discountsGiven
+    return accumulator
+  }, 0)
 }

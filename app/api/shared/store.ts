@@ -23,12 +23,12 @@ export const getStoreValue = <T>(storeName: 'discountStore' | 'purchaseStore'): 
  * @return DiscountCode[]
  */
 export const setDiscountStoreValue = (input: DiscountCode): DiscountCode[] => {
-  const currentStoreValue: DiscountCode[] = getStoreValue('discountStore')
+  const currentStoreValue: DiscountCode[] = getStoreValue<DiscountCode>('discountStore')
   const newStoreValue: DiscountCode[] = [...currentStoreValue, input]
 
   _.set(global, 'discountStore', newStoreValue)
 
-  return getStoreValue('discountStore')
+  return getStoreValue<DiscountCode>('discountStore')
 }
 
 /**
@@ -45,7 +45,7 @@ export const setDiscountStoreValue = (input: DiscountCode): DiscountCode[] => {
  * @param customerId : number
  */
 export const setPurchaseStoreValue = (input: Purchase, customerId: number): PurchaseStoreItem[] => {
-  let newStoreValue: PurchaseStoreItem[] = getStoreValue('purchaseStore')
+  let newStoreValue: PurchaseStoreItem[] = getStoreValue<PurchaseStoreItem>('purchaseStore')
   let existingStoreValue = newStoreValue.find(item => item.customerId === customerId)
 
   if (!existingStoreValue) {
@@ -60,5 +60,5 @@ export const setPurchaseStoreValue = (input: Purchase, customerId: number): Purc
 
   _.set(global, 'purchaseStore', newStoreValue)
 
-  return getStoreValue('purchaseStore')
+  return getStoreValue<PurchaseStoreItem>('purchaseStore')
 }

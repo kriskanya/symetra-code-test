@@ -1,6 +1,6 @@
 'use client'
 import { FormEvent, useEffect, useState } from 'react'
-import { cloneDeep, get, isArray, set } from 'lodash'
+import { cloneDeep, get, isArray, isEmpty, set } from 'lodash'
 import { DiscountCode, PurchaseStoreItem } from '@/app/api/shared/types'
 import { AdminForm, fetchDiscounts, fetchPurchases, setMessage } from '@/app/common/helpers'
 import Link from 'next/link'
@@ -14,6 +14,7 @@ export default function Admin() {
   const [discounts, setDiscounts] = useState<DiscountCode[]>([])
   const [purchases, setPurchases] = useState<PurchaseStoreItem[]>([])
   const [flashMessage, setFlashMessage] = useState<string>('')
+  const [report, setReport] = useState<{purchaseCount: number, totalDiscountsGiven: number}>()
 
   const submitForm = async (event: FormEvent) => {
     event.preventDefault()
@@ -42,6 +43,13 @@ export default function Admin() {
     }
   }
 
+  const getReport = async () => {
+    const res = await fetch('/api/report')
+    const jsonResponse = await res.json()
+
+    if (!isEmpty(jsonResponse)) setReport(jsonResponse)
+  }
+
   const onChange = (event: any) => {
     const value = get(event, 'target.value')
     const key = get(event, 'target.id')
@@ -52,25 +60,6 @@ export default function Admin() {
     setFormValues(formInputs)
   }
 
-  const getPurchasesCount = () => {
-    if (purchases.length === 0) return ''
-
-    return purchases.reduce((accumulator, currentValue) => {
-      accumulator += get(currentValue, 'purchases.length', 0)
-      return accumulator
-    }, 0)
-  }
-
-  const getTotalDiscountsGiven = () => {
-    if (discounts.length === 0) return ''
-
-    return purchases.reduce((accumulator, currentValue) => {
-      const discountsGiven = currentValue?.purchases.filter(p => p.discountedPrice)?.length
-      accumulator += discountsGiven
-      return accumulator
-    }, 0)
-  }
-
   useEffect(() => {
     (async () => {
       await Promise.all([
@@ -79,6 +68,12 @@ export default function Admin() {
       ])
     })()
   }, [])
+
+  useEffect(() => {
+    (async () => {
+      const a = await getReport()
+    })()
+  }, []);
 
   return (
     <form onSubmit={submitForm}>
@@ -153,8 +148,8 @@ export default function Admin() {
             </div>
           </div>
           <div>
-            <p>Purchases Count: {getPurchasesCount()}</p>
-            <p className="mt-6">Total discounts given out: {getTotalDiscountsGiven()}</p>
+            <p>Purchase Count: {report?.purchaseCount}</p>
+            <p className="mt-6">Total discounts given: {report?.totalDiscountsGiven}</p>
           </div>
         </div>
       </section>

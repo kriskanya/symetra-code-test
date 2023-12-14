@@ -4,6 +4,7 @@ import {
   validateFetchDiscountCodePayload
 } from '@/app/api/discount/discount.validation'
 import { createDiscountRecord, getDiscountRecordByName } from '@/app/api/shared/helpers'
+import _ from 'lodash'
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,9 +34,13 @@ export async function GET(req: NextRequest) {
     // validate the payload for the incoming request
     validateFetchDiscountCodePayload({ discountCode })
 
-    const res = await getDiscountRecordByName(discountCode as string)
-    return Response.json(res)
+    let res = await getDiscountRecordByName(discountCode as string)
 
+    if (_.isUndefined(res)) {
+      res = { errorMessage: 'Discount code does not exist' }
+    }
+
+    return Response.json(res)
   } catch (err: any) {
     return new NextResponse(
       JSON.stringify({

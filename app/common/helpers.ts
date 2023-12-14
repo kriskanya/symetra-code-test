@@ -45,5 +45,5 @@ export const setMessage = (text: string, setMessage: Dispatch<SetStateAction<str
   setMessage(text)
   setTimeout(() => {
     setMessage('')
-  }, 5000)
+  }, 6000)
 }
