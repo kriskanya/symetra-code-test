@@ -1,6 +1,6 @@
 'use client'
 import { cloneDeep, get, isArray, set } from 'lodash'
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, SyntheticEvent, useEffect, useState } from 'react'
 import { DiscountCode, PurchaseStoreItem } from '@/app/api/shared/types'
 import { CustomerForm, fetchDiscounts, fetchPurchases, setMessage } from '@/app/common/helpers'
 import Link from 'next/link'
@@ -44,7 +44,7 @@ export default function Customer() {
     }
   }
 
-  const onChange = (event: any) => {
+  const onChange = (event: SyntheticEvent) => {
     const value = get(event, 'target.value')
     const key = get(event, 'target.id')
 
@@ -54,7 +54,7 @@ export default function Customer() {
     setFormValues(formInputs)
   }
 
-  const checkDiscountCode = async (event: any) => {
+  const checkDiscountCode = async (event: SyntheticEvent) => {
     event.preventDefault()
 
     if (!formValues?.discountCode) {

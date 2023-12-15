@@ -1,5 +1,5 @@
 'use client'
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, SyntheticEvent, useEffect, useState } from 'react'
 import { cloneDeep, get, isArray, isEmpty, set } from 'lodash'
 import { DiscountCode, PurchaseStoreItem } from '@/app/api/shared/types'
 import { AdminForm, fetchDiscounts, fetchPurchases, setMessage } from '@/app/common/helpers'
@@ -52,7 +52,7 @@ export default function Admin() {
     }
   }
 
-  const onChange = (event: any) => {
+  const onChange = (event: SyntheticEvent) => {
     const value = get(event, 'target.value')
     const key = get(event, 'target.id')
 
