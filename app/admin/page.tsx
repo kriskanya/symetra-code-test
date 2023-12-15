@@ -47,7 +47,9 @@ export default function Admin() {
     const res = await fetch('/api/report')
     const jsonResponse = await res.json()
 
-    if (!isEmpty(jsonResponse)) setReport(jsonResponse)
+    if (!isEmpty(jsonResponse)) {
+      setReport(jsonResponse)
+    }
   }
 
   const onChange = (event: any) => {
@@ -66,14 +68,9 @@ export default function Admin() {
         fetchDiscounts(setDiscounts, setFlashMessage),
         fetchPurchases(setPurchases, setFlashMessage)
       ])
+      await getReport()
     })()
   }, [])
-
-  useEffect(() => {
-    (async () => {
-      const a = await getReport()
-    })()
-  }, []);
 
   return (
     <form onSubmit={submitForm}>

@@ -103,7 +103,7 @@ export const createPurchaseRecord = (payload: Purchase, customerId: number): Pro
 }
 
 /**
- * Retrieves the total purchase count
+ * Retrieves the count of all purchases
  */
 export const getPurchaseCount = () => {
   const purchases = getStoreValue<PurchaseStoreItem>('purchaseStore')
