@@ -51,6 +51,11 @@ HEADERS: { Key: 'Content-Type', Value: 'application/json' }
 
 ```
 
+- Generate a report that returns the count of the purchases as well as the total count of discounts that were given out:
+```
+GET -> http://localhost:3000/api/report
+```
+
 5. Navigate to http://localhost:3000 in the browser 
 6. Go to the /admin page and create some discount records
 7. Go to the /customer page and create some purchases. You can use "Check discount code" to see if the discount code will work for that customerId
