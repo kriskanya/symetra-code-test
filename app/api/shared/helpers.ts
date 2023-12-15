@@ -90,8 +90,8 @@ export const createPurchaseRecord = (payload: Purchase, customerId: number): Pro
 
     // only apply discount if the number of the current purchase is equal to the nthTransaction specified on the discount record
     if (discount && payload?.originalPrice && discount?.discountedAmount && (discount?.nthTransaction === numberOfCustomerPurchases)) {
-      const discountedPrice = payload.originalPrice - (payload.originalPrice * discount.discountedAmount)
-      payload = { ...payload, ...{ discountedPrice } }
+      const discountedPrice = (payload.originalPrice - (payload.originalPrice * discount.discountedAmount)).toFixed(2)
+      payload = { ...payload, ...{ discountedPrice: discountedPrice as unknown as number } }
     // otherwise, ensure there is no discountCode on this record
     } else {
       payload = _.omit(payload, 'discountCode')

@@ -1,6 +1,6 @@
 import Joi, { ValidationOptions } from 'joi'
 import {
-  NON_EMPTY_STR, OPTIONAL_STR,
+  NON_EMPTY_STR, OPTIONAL_STR, POSITIVE_NONZERO_FLOAT,
   POSITIVE_NONZERO_INT,
   UI_DB_ID,
   validate
@@ -20,7 +20,7 @@ const VALIDATION_OPTS:ValidationOptions = {
 export const CREATE_PURCHASE_PAYLOAD = Joi.object().keys({
   discountCode   : OPTIONAL_STR,
   itemName       : NON_EMPTY_STR,
-  originalPrice  : POSITIVE_NONZERO_INT,
+  originalPrice  : POSITIVE_NONZERO_FLOAT,
   customerId     : UI_DB_ID
 }).label('createPurchasePayload')
 

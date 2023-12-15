@@ -6,6 +6,7 @@ export const OPTIONAL_STR            = NON_EMPTY_STR.allow('')
 
 // NUMBERS
 export const POSITIVE_NONZERO_INT    = Joi.number().min(1).integer().positive()
+export const POSITIVE_NONZERO_FLOAT    = Joi.number().min(1).positive()
 export const POSITIVE_INT_LESS_THAN_ONE    = Joi.number().max(1).positive()
 export const UI_DB_ID                = POSITIVE_NONZERO_INT.options({ convert:true })
 
