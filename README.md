@@ -1,5 +1,31 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Assignment
+### Description
+
+Imagine an ecommerce store where the store owner gives out discounts to every nth transaction. Customers, as they login, get to see if they have discount and the appropriate discount code. Customers can then purchase items using the discount code if available. The store owner reviews at various times what the count of purchases that were made in the store as well as the total count of discounts that were given out.
+
+### Goal: Develop API resources to enable:
+
+An admin to set the n, and the discount code.
+Customers to check if there is a discount code and then make a purchase with or without the discount code
+Admin to see the report described above
+
+### Stretch Goal:
+
+Develop a simple UI with different pages for admin and customer
+
+### Assumptions:
+
+Server side state can be maintained all in memory, so no persistence layer is required
+No authentication or authorization required on API/UI
+Reports and any other data can be simple JSON – don’t worry about prettying it up
+
+### Deliverables:
+
+Publish your code on GitHub and share the link
+Share documentation about how to run code
+
 ## Getting Started
 
 1. Clone the repo onto your local machine
